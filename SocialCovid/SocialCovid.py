@@ -14,24 +14,27 @@ INFECTED_PLOT = False
 PROXIMITY_ENABLE = True
 PROXIMITY_FOLDER = 'subgraphs_proximity'
 PROXIMITY_PLOT = True
-PROXIMITY_READ = False
+PROXIMITY_READ = True
 
 def plot_proximity(proximityGraph, counter):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.axis('off')
     size = proximityGraph.number_of_nodes()
     if size > 100:
-        node_size = 10
+        node_size = 1
         font_size = 1
-        dpi = 1000
+        dpi = 2000
         width = 0.1
     else:
         node_size = 100
         font_size = 6
         dpi = 300
-        width = 1 
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.axis('off')
+        width = 1
+        ax.set_xlim((-1.2, 1.2))
+        ax.set_ylim((-1.2, 1.2))
     nx.draw_networkx(proximityGraph, node_size = node_size, width = width, edge_color = '#aaaaaa', font_size = font_size)
+    #if size < 100:
     plt.savefig(PROXIMITY_FOLDER + '/' + str(size) + '_proximity_' + str(counter) + '.png', dpi = dpi)
     plt.close()
 
