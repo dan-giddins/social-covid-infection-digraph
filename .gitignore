@@ -125,3 +125,4 @@ dmypy.json
 .pyre/
 
 SocialCovid/subgraphs_*
+SocialCovid/proximityGraph
