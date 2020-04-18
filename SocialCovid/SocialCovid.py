@@ -17,11 +17,22 @@ PROXIMITY_PLOT = True
 PROXIMITY_READ = False
 
 def plot_proximity(proximityGraph, counter):
+    size = proximityGraph.number_of_nodes()
+    if size > 100:
+        node_size = 10
+        font_size = 1
+        dpi = 1000
+        width = 0.1
+    else:
+        node_size = 100
+        font_size = 6
+        dpi = 300
+        width = 1 
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.axis('off')
-    nx.draw_networkx(proximityGraph, node_size = 10, edge_color = '#aaaaaa', font_size = 1)
-    plt.savefig(PROXIMITY_FOLDER + '/' + str(proximityGraph.number_of_nodes()) + '_proximity_' + str(counter) + '.png', dpi = 1000)
+    nx.draw_networkx(proximityGraph, node_size = node_size, width = width, edge_color = '#aaaaaa', font_size = font_size)
+    plt.savefig(PROXIMITY_FOLDER + '/' + str(size) + '_proximity_' + str(counter) + '.png', dpi = dpi)
     plt.close()
 
 def plot_infected(node, subg):
