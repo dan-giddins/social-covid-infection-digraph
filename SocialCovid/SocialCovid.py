@@ -32,13 +32,16 @@ def main():
                 if subnode == node:
                     color_map.append('#ffaaaa')
                 else: 
-                    color_map.append('#aaaaff')   
+                    color_map.append('#aaaaff')
+            fig = plt.figure()
+            fig.suptitle('Infection source: ' + str(node))
+            ax = fig.add_subplot(111)
+            ax.set_title('Total infected: ' + str(subg.number_of_nodes() - 1))
+            ax.axis('off')
             nx.draw_networkx(subg, node_size = 100, node_color = color_map, edge_color = '#aaaaaa', font_size = 6)
-            plt.axis('off')
-            plt.suptitle(str(node))
             #plt.show()
             plt.savefig('subgraphs/'+ str(subg.number_of_nodes()) + "_" + str(node) + '.png', dpi = 300)
-            plt.clf()
+            plt.close()
 
 
 if __name__ == "__main__":
