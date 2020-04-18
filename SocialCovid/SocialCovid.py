@@ -39,18 +39,7 @@ def main():
             rootNode = str(node)
             fig.suptitle('Infection source: ' + rootNode)
             infected = str(subg.number_of_nodes() - 1)
-            rootPatientInfo = None
-            for index, row in patientInfo.iterrows():
-                if int(row['patient_id']) == node:
-                    rootPatientInfo = row;
-            if rootPatientInfo is not None:
-                sex = rootPatientInfo['sex']
-                print(sex)
-                age = rootPatientInfo['age']
-                print(age)
-                ax.set_title('Total infected: ' + infected + ', Sex: ' + sex + ', Age: ' + age)
-            else:
-                ax.set_title('Total infected: ' + infected)
+            ax.set_title('Total infected: ' + infected)
             ax.axis('off')
             nx.draw_networkx(subg, node_size = 100, node_color = color_map, edge_color = '#aaaaaa', font_size = 6)
             #plt.show()
