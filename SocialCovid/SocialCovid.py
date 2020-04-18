@@ -34,8 +34,8 @@ def main():
                 else: 
                     color_map.append('#aaaaff')   
             nx.draw_networkx(subg, node_size = 100, node_color = color_map, edge_color = '#aaaaaa', font_size = 6)
-            #nx.draw(subg, with_labels=True)
             plt.axis('off')
+            plt.suptitle(str(node))
             #plt.show()
             plt.savefig('subgraphs/'+ str(subg.number_of_nodes()) + "_" + str(node) + '.png', dpi = 300)
             plt.clf()
