@@ -25,7 +25,17 @@
     <Compile Include="SocialCovid.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="PatientInfo.csv" />
+    <Content Include="data\Case.csv" />
+    <Content Include="data\PatientInfo.csv" />
+    <Content Include="data\PatientRoute.csv" />
+    <Content Include="data\Region.csv" />
+    <Content Include="data\SearchTrend.csv" />
+    <Content Include="data\SeoulFloating.csv" />
+    <Content Include="data\Time.csv" />
+    <Content Include="data\TimeAge.csv" />
+    <Content Include="data\TimeGender.csv" />
+    <Content Include="data\TimeProvince.csv" />
+    <Content Include="data\Weather.csv" />
     <Content Include="subgraphs\1000000002.0.png" />
     <Content Include="subgraphs\1000000015.0.png" />
     <Content Include="subgraphs\1000000022.0.png" />
@@ -101,6 +111,7 @@
     <Content Include="subgraphs\2017000005.0.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="data\" />
     <Folder Include="subgraphs\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

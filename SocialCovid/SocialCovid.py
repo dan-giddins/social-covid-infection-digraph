@@ -7,11 +7,12 @@ import os
 
 def main():
     # load patient csv data
-    patientData = pd.read_csv('PatientInfo.csv')
+    patientInfo = pd.read_csv('data/PatientInfo.csv')
+    patientRoute = pd.read_csv('data/PatientRoute.csv')
 
     # create directed infection graph
     g = nx.DiGraph()
-    for index, row in patientData.iterrows():
+    for index, row in patientInfo.iterrows():
         if not math.isnan(row['infected_by']):
             g.add_edge(int(row['infected_by']), int(row['patient_id']))
         
@@ -34,13 +35,26 @@ def main():
                 else: 
                     color_map.append('#aaaaff')
             fig = plt.figure()
-            fig.suptitle('Infection source: ' + str(node))
             ax = fig.add_subplot(111)
-            ax.set_title('Total infected: ' + str(subg.number_of_nodes() - 1))
+            rootNode = str(node)
+            fig.suptitle('Infection source: ' + rootNode)
+            infected = str(subg.number_of_nodes() - 1)
+            rootPatientInfo = None
+            for index, row in patientInfo.iterrows():
+                if int(row['patient_id']) == node:
+                    rootPatientInfo = row;
+            if rootPatientInfo is not None:
+                sex = rootPatientInfo['sex']
+                print(sex)
+                age = rootPatientInfo['age']
+                print(age)
+                ax.set_title('Total infected: ' + infected + ', Sex: ' + sex + ', Age: ' + age)
+            else:
+                ax.set_title('Total infected: ' + infected)
             ax.axis('off')
             nx.draw_networkx(subg, node_size = 100, node_color = color_map, edge_color = '#aaaaaa', font_size = 6)
             #plt.show()
-            plt.savefig('subgraphs/'+ str(subg.number_of_nodes()) + "_" + str(node) + '.png', dpi = 300)
+            plt.savefig('subgraphs/'+ infected + "_" + rootNode + '.png', dpi = 300)
             plt.close()
 
 
