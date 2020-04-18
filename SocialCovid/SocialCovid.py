@@ -15,7 +15,15 @@ PROXIMITY_ENABLE = True
 PROXIMITY_VALUE = 0.01
 PROXIMITY_FOLDER = 'subgraphs_proximity_' + str(PROXIMITY_VALUE)
 PROXIMITY_PLOT = True
+PROXIMITY_READ = True
 
+def plot_proximity_full(proximityGraph):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.axis('off')
+    nx.draw_networkx(proximityGraph, node_size = 50, edge_color = '#aaaaaa', font_size = 3)
+    plt.savefig(PROXIMITY_FOLDER + '/' 'proximity_full.png', dpi = 1000)
+    plt.close()
 
 def plot_infected(node, subg):
     color_map = []
@@ -76,28 +84,39 @@ def main():
                     plot_infected(node, subg)
 
     if (PROXIMITY_ENABLE):
-        # create proximity graph
-        proximityGraph = nx.Graph()
-        locations = {}
-        for index, row in patientRoute.iterrows():
-            patient_id = int(row['patient_id'])
-            if patient_id not in locations:
-                proximityGraph.add_node(patient_id)
-                locations[patient_id] = [(row['latitude'], row['longitude'])]
-            else:
-                locations[patient_id].append((row['latitude'], row['longitude']))
+        proximityGraph = None
+        if (PROXIMITY_READ):
+            with open('proximityGraph_' + str(PROXIMITY_VALUE), 'rb') as file:
+                proximityGraph = pickle.load(file)
+        else:
+            # create proximity graph
+            proximityGraph = nx.Graph()
+            locations = {}
+            for index, row in patientRoute.iterrows():
+                patient_id = int(row['patient_id'])
+                if patient_id not in locations:
+                    proximityGraph.add_node(patient_id)
+                    locations[patient_id] = [(row['latitude'], row['longitude'])]
+                else:
+                    locations[patient_id].append((row['latitude'], row['longitude']))
 
-        # add edges
-        for node1 in list(proximityGraph):
-            for node2 in list(proximityGraph):
-                if not node1 == node2:
-                    check_locations(locations, node1, node2, proximityGraph)
+            # add edges
+            for node1 in list(proximityGraph):
+                for node2 in list(proximityGraph):
+                    if not node1 == node2:
+                        check_locations(locations, node1, node2, proximityGraph)
 
-        with open('proximityGraph', 'wb') as file:
-            pickle.dump(proximityGraph, file)
+            with open('proximityGraph_' + str(PROXIMITY_VALUE), 'wb') as file:
+                pickle.dump(proximityGraph, file)
 
         print(proximityGraph.number_of_edges)
 
-        # plot
+        # plot full
+        plot_proximity_full(proximityGraph)
+
+        # find subgraphs
+        proximitySubraphs = proximityGraph.copy()
+        
+
 if __name__ == "__main__":
     main()
