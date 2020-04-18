@@ -16,11 +16,13 @@ PROXIMITY_FOLDER = 'subgraphs_proximity'
 PROXIMITY_PLOT = True
 PROXIMITY_READ = True
 
+# plot proximity graph
 def plot_proximity(proximityGraph, counter):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.axis('off')
     size = proximityGraph.number_of_nodes()
+    # draw diffrent node densities diffrently
     if size > 100:
         node_size = 1
         font_size = 1
@@ -34,14 +36,15 @@ def plot_proximity(proximityGraph, counter):
         ax.set_xlim((-1.2, 1.2))
         ax.set_ylim((-1.2, 1.2))
     nx.draw_networkx(proximityGraph, node_size = node_size, width = width, edge_color = '#aaaaaa', font_size = font_size)
-    #if size < 100:
     plt.savefig(PROXIMITY_FOLDER + '/' + str(size) + '_proximity_' + str(counter) + '.png', dpi = dpi)
     plt.close()
 
+# plot infected digraph
 def plot_infected(node, subg):
     color_map = []
     for subnode in subg:
         if subnode == node:
+            # colour root node red
             color_map.append('#ffaaaa')
         else: 
             color_map.append('#aaaaff')
@@ -56,17 +59,6 @@ def plot_infected(node, subg):
     plt.savefig(INFECTED_FOLDER + '/' + infected + "_" + rootNode + '.png', dpi = 300)
     plt.close()
 
-def proximity(node1Locations, node2Locations):
-    return geopy.distance.distance(node1Locations, node2Locations).km
-
-def check_locations(locations, node1, node2, proximityGraph):
-    for node1Locations in locations[node1]:
-        for node2Locations in locations[node2]:
-            if proximity(node1Locations, node2Locations) <= PROXIMITY_VALUE:
-                proximityGraph.add_edge(node1, node2)
-                print((node1, node2))
-                return
-
 def main():
     # create subgraph dirs
     if not os.path.exists(INFECTED_FOLDER):
@@ -78,6 +70,7 @@ def main():
     patientInfo = pd.read_csv('data/PatientInfo.csv')
     patientRoute = pd.read_csv('data/PatientRoute.csv')
 
+    # generate infection digraph 
     if (INFECTED_ENABLE):
         # create directed infection graph
         infectionGraph = nx.DiGraph()
@@ -92,13 +85,17 @@ def main():
         for node in list(infectionGraph):
             if (infectionGraph.in_degree(node) == 0):
                 print(node)
+                # include root infectors and their descendants
                 subg = infectionGraph.subgraph(nx.descendants(infectionGraph, node) | {node})
                 if (INFECTED_PLOT):
+                    # plot
                     plot_infected(node, subg)
-
+    
+    # generate proximity graph 
     if (PROXIMITY_ENABLE):
         proximityGraph = None
         if (PROXIMITY_READ):
+            # load graph from file
             with open('proximityGraph', 'rb') as file:
                 proximityGraph = pickle.load(file)
         else:
@@ -110,25 +107,31 @@ def main():
                     for index1, row1 in group.iterrows():
                         for index2, row2 in group.iterrows():
                             if int(row1['patient_id']) != int(row2['patient_id']):
+                                # add edge between two diffrent patients who have been at the same location
                                 proximityGraph.add_edge(int(row1['patient_id']), int(row2['patient_id']))
-
+            # write to file
             with open('proximityGraph', 'wb') as file:
                 pickle.dump(proximityGraph, file)
 
         print(proximityGraph.number_of_edges())
 
-        # find subgraphs
-        proximityGraphCopy = proximityGraph.copy()
+        # find proximity subgraphs
+        proximityGraphTemp = proximityGraph.copy()
         counter = 1
-        while (proximityGraphCopy.number_of_nodes() > 0):
-            for node in list(proximityGraphCopy):
+        # process all nodes in graph
+        while (proximityGraphTemp.number_of_nodes() > 0):
+            # get a node
+            for node in list(proximityGraphTemp):
                 print(node)
-                tree = nx.dfs_tree(proximityGraphCopy, node)
-                subgraph = proximityGraphCopy.subgraph(tree.nodes)
+                # find all nodes connected to the given node
+                tree = nx.dfs_tree(proximityGraphTemp, node)
+                subgraph = proximityGraphTemp.subgraph(tree.nodes)
+                # plot these nodes
                 if (PROXIMITY_PLOT):
                     plot_proximity(subgraph, counter)
                 counter += 1
-                proximityGraphCopy.remove_nodes_from(tree.nodes)
+                # remove these nodes from the temporary tree
+                proximityGraphTemp.remove_nodes_from(tree.nodes)
                 break
         
 
